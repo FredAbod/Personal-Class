@@ -1,3 +1,4 @@
+const sendEmail = require("../config/email");
 const User = require("../models/user.schema");
 const bcrypt = require("bcryptjs");
 
@@ -22,7 +23,12 @@ const signup = async (req, res) => {
       phoneNumber,
     });
     await newUser.save();
-    return res.status(201).json({ message: "User Signed Up Successfully" });
+
+    // Send OTP to user's email
+    await sendEmail(email, "Verify Your Email", `Your OTP is ${otp}`);
+
+    return res.status(201).json({ message: "User Signed Up Successfully And Email Sent", otp: otp });
+
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
